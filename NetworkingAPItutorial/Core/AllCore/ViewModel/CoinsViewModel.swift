@@ -18,12 +18,15 @@ class CoinsViewModel: ObservableObject {
 	}
 	
 	func fetchPrice(coin: String) {
+		print(Thread.current)
 	let urlString = "https://api.coingecko.com/api/v3/simple/price?ids=\(coin)&vs_currencies=usd"
 		
 		guard let url = URL(string: urlString) else { return }
 		print("Fetching price...") // 1
 		
 		URLSession.shared.dataTask(with: url) { data, response, error in
+			print(Thread.current)
+			
 			print("Did receive data \(data)")//3
 			guard let data = data else { return }
 			guard let jsonObject = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
@@ -34,6 +37,7 @@ class CoinsViewModel: ObservableObject {
 			}
 			guard let price = value["usd"] else { return }
 			DispatchQueue.main.async {
+				print(Thread.current)
 				self.coin = coin.capitalized
 				self.price = "$\(price)"
 			}
@@ -41,5 +45,4 @@ class CoinsViewModel: ObservableObject {
 		}.resume()
 		print("Did reach end of function") // 2
 	}
-	
 }

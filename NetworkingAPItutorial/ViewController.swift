@@ -14,7 +14,10 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .white
+		
+		appStart.fetchPrice(coin: "bitcoin")
 		appStart.fetchPrice(coin: "litecoin")
+		
 		
 		
 		//startApp()
