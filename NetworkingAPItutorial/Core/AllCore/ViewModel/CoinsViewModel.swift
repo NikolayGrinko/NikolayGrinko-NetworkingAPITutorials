@@ -10,39 +10,37 @@ import Foundation
 
 class CoinsViewModel: ObservableObject {
 	
-	@Published var coin = ""
-	@Published var price = ""
+	@Published var coins = [Coin]()
+	@Published var errorMessage: String?
+	//	@Published var coin = ""
+	//	@Published var price = ""
+	
+	
+	
+	
+	
+	private let service = CoinDataService()
 	
 	init() {
-		//fetchPrice()
+		fetchCoinsWithCompletionHandler()
+		Task { try await fetchCoins() }
 	}
 	
-	func fetchPrice(coin: String) {
-		print(Thread.current)
-	let urlString = "https://api.coingecko.com/api/v3/simple/price?ids=\(coin)&vs_currencies=usd"
-		
-		guard let url = URL(string: urlString) else { return }
-		print("Fetching price...") // 1
-		
-		URLSession.shared.dataTask(with: url) { data, response, error in
-			print(Thread.current)
-			
-			print("Did receive data \(data)")//3
-			guard let data = data else { return }
-			guard let jsonObject = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
-			print(jsonObject)
-			guard let value = jsonObject[coin] as? [String: Double] else {
-				print("Failed to parse value")
-				return
-			}
-			guard let price = value["usd"] else { return }
+	func fetchCoins() async throws {
+		self.coins = try await service.fetchCoins()
+	}
+	
+	
+	func fetchCoinsWithCompletionHandler() {
+		service.fetchCoinsWithResult { [weak self] result in
 			DispatchQueue.main.async {
-				print(Thread.current)
-				self.coin = coin.capitalized
-				self.price = "$\(price)"
+				switch result {
+					case .success(let coins):
+						self?.coins = coins
+					case .failure(let error):
+						self?.errorMessage = error.localizedDescription
+				}
 			}
-			
-		}.resume()
-		print("Did reach end of function") // 2
+		}
 	}
 }

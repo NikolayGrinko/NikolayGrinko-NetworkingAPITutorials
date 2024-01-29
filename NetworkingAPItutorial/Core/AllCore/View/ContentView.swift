@@ -13,11 +13,27 @@ struct ContentView: View {
 	@StateObject var viewModel = CoinsViewModel()
 	
 	var body: some View {
-	VStack {
-		
-		Text("\(viewModel.coin): \(viewModel.price)")
-	}
-	.padding()
+		List {
+			ForEach(viewModel.coins) { coin in
+				HStack {
+					Text("\(coin.marketCapRanc)")
+						.foregroundColor(.gray)
+					
+					VStack(alignment: .leading, spacing: 4) {
+						Text(coin.name)
+							.fontWeight(.semibold)
+						
+						Text(coin.symbol.uppercased())
+					}
+				}
+				.font(.footnote)
+			}
+		}
+		.overlay {
+			if let error = viewModel.errorMessage {
+				Text(error)
+			}
+		}
 }
 }
 

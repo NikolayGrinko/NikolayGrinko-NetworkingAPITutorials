@@ -8,25 +8,39 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-	var appStart = CoinsViewModel()
+	 var coins = [Coin]()
+	private let service = CoinDataService()
+	
+	
+	let coinsData = CoinsViewModel()
+	
+	@IBOutlet weak var tableView: UITableView!
+	
+	let identifier = "MyCell"
+	
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .white
-		
-		appStart.fetchPrice(coin: "bitcoin")
-		appStart.fetchPrice(coin: "litecoin")
-		
+		view.addSubview(tableView)
+		tableView.frame = view.bounds
 		
 		
-		//startApp()
+//		tableView.delegate = self
+//		tableView.dataSource = self
 	}
 
-//	func startApp() {
-//		let vc = CoinsViewModel()
-//		vc.fetchPrice()
-//	
-//	}
+
 }
 
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		coins.count
+	}
+	
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		var cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
+		cell.backgroundColor = .gray
+		return cell
+	}
+}
